@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,6 +15,7 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 
 	var rt routes.Route
 

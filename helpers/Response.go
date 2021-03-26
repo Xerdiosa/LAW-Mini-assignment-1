@@ -6,47 +6,46 @@ import (
 	"net/http"
 )
 
-// APIResponse is
-type APIResponse struct {
-	Status int         `json:"status"`
-	Data   interface{} `json:"data"`
+// APIResponseToken is
+type APIResponseToken struct {
+	AccessToken  string      `json:"access_token"`
+	ExpiresIn    int         `json:"expires_in"`
+	TokenType    string      `json:"token_type"`
+	Scope        interface{} `json:"scope"`
+	RefreshToken string      `json:"refresh_token"`
 }
 
-// APIResponse is
-type APIResponseNotFound struct {
-	Id         string `json:"id"`
-	Error      string `json:"error"`
-	StatusCode int    `json:"statusCode"`
+// APIResponseResource
+type APIResponseResource struct {
+	AccessToken  string      `json:"access_token"`
+	ClientID     string      `json:"client_id"`
+	UserID       string      `json:"user_id"`
+	FullName     string      `json:"full_name"`
+	Npm          string      `json:"npm"`
+	Expires      interface{} `json:"expires"`
+	RefreshToken string      `json:"refresh_token"`
+}
+
+// APIResponseError is
+type APIResponseError struct {
+	Error            string `json:"error"`
+	ErrorDescription string `json:"error_description"`
 }
 
 // Response is
-func Response(w http.ResponseWriter, httpStatus int, data interface{}) {
-	apiResponse := new(APIResponse)
-	apiResponse.Status = httpStatus
-	apiResponse.Data = data
-
+func Response(w http.ResponseWriter, response interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(httpStatus)
-	json.NewEncoder(w).Encode(apiResponse)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 
+// ResponseBadRequest is
 func ResponseBadRequest(w http.ResponseWriter, httpStatus int, err error) {
-	apiResponse := new(APIResponseNotFound)
-	apiResponse.Error = err.Error()
-	apiResponse.StatusCode = httpStatus
+	apiResponse := new(APIResponseError)
+	apiResponse.Error = "invalid request"
+	apiResponse.ErrorDescription = err.Error()
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(httpStatus)
-	json.NewEncoder(w).Encode(apiResponse)
-}
-
-// ResponseNotFound is
-func ResponseNotFound(w http.ResponseWriter) {
-	apiResponse := new(APIResponseNotFound)
-	apiResponse.Error = "Not Found"
-	apiResponse.StatusCode = 404
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(404)
 	json.NewEncoder(w).Encode(apiResponse)
 }
